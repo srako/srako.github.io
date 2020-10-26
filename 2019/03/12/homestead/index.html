@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="Zh-cn">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Homestead 安装 Laravel 官方推荐使用 homestead 搭建环境，那么这个 homestead 究竟是什么鬼？相信很多和我一样不是专门搞服务器的同学看过各种资料后还会有点迷糊。刚开始看了一些介绍后我以为 homestead 是一个整合了 Nginx + PHP + MySQL + Composer 还有其他 Laravel 需要环境的安装包加管理器的概念，类似 win 平台上的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Homestead">
+<meta property="og:url" content="http://srako.github.io/2019/03/12/homestead/index.html">
+<meta property="og:site_name" content="Srako&#39;s Blog">
+<meta property="og:description" content="Homestead 安装 Laravel 官方推荐使用 homestead 搭建环境，那么这个 homestead 究竟是什么鬼？相信很多和我一样不是专门搞服务器的同学看过各种资料后还会有点迷糊。刚开始看了一些介绍后我以为 homestead 是一个整合了 Nginx + PHP + MySQL + Composer 还有其他 Laravel 需要环境的安装包加管理器的概念，类似 win 平台上的">
+<meta property="og:locale" content="Zh-cn">
+<meta property="og:updated_time" content="2020-10-20T05:42:42.472Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Homestead">
+<meta name="twitter:description" content="Homestead 安装 Laravel 官方推荐使用 homestead 搭建环境，那么这个 homestead 究竟是什么鬼？相信很多和我一样不是专门搞服务器的同学看过各种资料后还会有点迷糊。刚开始看了一些介绍后我以为 homestead 是一个整合了 Nginx + PHP + MySQL + Composer 还有其他 Laravel 需要环境的安装包加管理器的概念，类似 win 平台上的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://srako.github.io/2019/03/12/homestead/">
+
+
+
+
+
+  <title>Homestead | Srako's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="Zh-cn">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Srako's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Recording Daily Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://srako.github.io/2019/03/12/homestead/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Srako">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Srako's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Homestead</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-12T14:19:06+08:00">
+                2019-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Development/" itemprop="url" rel="index">
+                    <span itemprop="name">Development</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Homestead-安装"><a href="#Homestead-安装" class="headerlink" title="Homestead 安装"></a>Homestead 安装</h1><blockquote>
+<p>Laravel 官方推荐使用 homestead 搭建环境，那么这个 homestead 究竟是什么鬼？相信很多和我一样不是专门搞服务器的同学看过各种资料后还会有点迷糊。刚开始看了一些介绍后我以为 homestead 是一个整合了 Nginx + PHP + MySQL + Composer 还有其他 Laravel 需要环境的安装包加管理器的概念，类似 win 平台上的 wnmp 之类的东西。不过装一半就发现完全是另一回事。<br>实际上 homestead 是一台虚拟机的原型，类似我们买电脑后预装的系统，只是这个系统预装了一切 Laravel 需要的东西。而我们最先进行的步骤安装 VirtualBox 和 Vargrnt 实际上就是安装了虚拟机。这意味着实际上 homestead 安装完成后我们的 mac 上并没有也不需要安装 PHP、Nginx、MySQL 等等的东西，所有东西都安装在另一台机器上（虚拟机）。</p>
+</blockquote>
+<h2 id="1-vagrant、virtualbox安装"><a href="#1-vagrant、virtualbox安装" class="headerlink" title="1.vagrant、virtualbox安装"></a>1.vagrant、virtualbox安装</h2><ul>
+<li><p><a href="https://www.virtualbox.org" target="_blank" rel="noopener">virtualbox下载地址</a></p>
+</li>
+<li><p><a href="https://www.vagrantup.com/downloads.html" target="_blank" rel="noopener">vagrant下载地址</a></p>
+</li>
+<li>查看vagrant是否安装成功<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant -v</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="2-安装Homestead-Vagrant-Box"><a href="#2-安装Homestead-Vagrant-Box" class="headerlink" title="2.安装Homestead Vagrant Box"></a>2.安装Homestead Vagrant Box</h2><ul>
+<li><p><a href="https://vagrantcloud.com/laravel/boxes/homestead/versions/7.0.0/providers/virtualbox.box" target="_blank" rel="noopener">下载地址</a></p>
+</li>
+<li><p>切换到下载目录执行</p>
+</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vagrant box add laravel/homestead virtualbox.box --box-version 7.0.0</span><br><span class="line"><span class="comment">#是否安装成功</span></span><br><span class="line">vagrant box list</span><br><span class="line">```    </span><br><span class="line"><span class="comment">## 3.安装Homestead</span></span><br><span class="line">- 克隆存储库来安装Homestead</span><br><span class="line"></span><br><span class="line">``` bash</span><br><span class="line">git <span class="built_in">clone</span> https://github.com/laravel/homestead.git ~/Homestead</span><br></pre></td></tr></table></figure>
+<ul>
+<li>克隆Homestead存储库后，从Homestead目录运行命令以创建配置文件。</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac / Linux...</span></span><br><span class="line">bash init.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># Windows...</span></span><br><span class="line">init.bat</span><br></pre></td></tr></table></figure>
+<ul>
+<li>示例文件</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">name:</span> <span class="string">homestead-7</span></span><br><span class="line"><span class="attr">hostname:</span> <span class="string">homestead</span></span><br><span class="line"><span class="attr">ip:</span> <span class="number">192.168</span><span class="number">.66</span><span class="number">.66</span></span><br><span class="line"><span class="attr">memory:</span> <span class="number">2048</span></span><br><span class="line"><span class="attr">cpus:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">provider:</span> <span class="string">virtualbox</span></span><br><span class="line"><span class="attr">authorize:</span> <span class="string">~/.ssh/id_rsa.pub</span></span><br><span class="line"><span class="attr">keys:</span> </span><br><span class="line"><span class="bullet">    -</span> <span class="string">~/.ssh/id_rsa</span></span><br><span class="line"></span><br><span class="line"><span class="attr">folders:</span></span><br><span class="line">        <span class="comment"># 配置共享文件夹</span></span><br><span class="line"><span class="bullet">    -</span></span><br><span class="line"><span class="attr">        map:</span> <span class="string">'~/Workspace/www/xiaoyinka/'</span></span><br><span class="line"><span class="attr">        to:</span> <span class="string">/www/xiaoyinka</span></span><br><span class="line"><span class="bullet">    -</span></span><br><span class="line"><span class="attr">        map:</span> <span class="string">'~/Workspace/www/wechat/'</span></span><br><span class="line"><span class="attr">        to:</span> <span class="string">/www/wechat</span></span><br><span class="line"><span class="attr">sites:</span>    </span><br><span class="line">        <span class="comment"># 配置Nginx站点</span></span><br><span class="line">        <span class="comment"># php: "5.6" 目前7.3，会报错</span></span><br><span class="line">        <span class="comment"># type:apache, laravel (the default), thinkphp,proxy, silverstripe, statamic, symfony2, and symfony4.</span></span><br><span class="line"><span class="bullet">    -</span>   </span><br><span class="line"><span class="attr">        map:</span> <span class="string">xyk.cn</span></span><br><span class="line"><span class="attr">        to:</span> <span class="string">/www/xiaoyinka/public</span></span><br><span class="line"><span class="attr">        type:</span> <span class="string">thinkphp</span></span><br><span class="line"><span class="attr">        php:</span> <span class="string">"7.1"</span></span><br><span class="line"><span class="bullet">    -</span>   </span><br><span class="line"><span class="attr">        map:</span> <span class="string">we.cn</span></span><br><span class="line"><span class="attr">        to:</span> <span class="string">/www/wechat/public</span></span><br><span class="line"><span class="attr">        type:</span> <span class="string">thinkphp</span></span><br><span class="line"><span class="attr">        php:</span> <span class="string">"7.2"</span>        </span><br><span class="line"><span class="attr">databases:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">demo</span></span><br><span class="line">    <span class="comment"># - eshuduoduo</span></span><br><span class="line"><span class="comment"># blackfire:</span></span><br><span class="line"><span class="comment">#     - id: foo</span></span><br><span class="line"><span class="comment">#       token: bar</span></span><br><span class="line"><span class="comment">#       client-id: foo</span></span><br><span class="line"><span class="comment">#       client-token: bar</span></span><br><span class="line">   </span><br><span class="line"><span class="comment"># # ports:</span></span><br><span class="line"><span class="comment"># #     - send: 50000</span></span><br><span class="line"><span class="comment"># #       to: 5000</span></span><br><span class="line"><span class="comment"># #     - send: 7777</span></span><br><span class="line"><span class="comment"># #       to: 777</span></span><br><span class="line"><span class="comment"># #       protocol: udp</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># networks:</span></span><br><span class="line"><span class="comment">#     - type: "public_network"</span></span><br><span class="line"><span class="comment">#       ip: "192.168.10.80"</span></span><br><span class="line"><span class="comment">#       bridge: "en0: Wi-Fi (AirPort)"</span></span><br><span class="line"><span class="comment">#     - type: "public_network"</span></span><br><span class="line"><span class="comment">#       ip: "192.168.10.81"</span></span><br><span class="line"><span class="comment">#       bridge: "en0: Wi-Fi (AirPort)"      </span></span><br><span class="line"><span class="comment">#     - type: "public_network"</span></span><br><span class="line"><span class="comment">#       ip: "192.168.10.82"</span></span><br><span class="line"><span class="comment">#       bridge: "en0: Wi-Fi (AirPort)"    </span></span><br><span class="line">    <span class="comment"># momotang: 80 (guest) =&gt; 8000 (host) (adapter 1)</span></span><br><span class="line">    <span class="comment"># momotang: 443 (guest) =&gt; 44300 (host) (adapter 1)</span></span><br><span class="line">    <span class="comment"># momotang: 3306 (guest) =&gt; 33060 (host) (adapter 1)</span></span><br><span class="line">    <span class="comment"># momotang: 5432 (guest) =&gt; 54320 (host) (adapter 1)</span></span><br><span class="line">    <span class="comment"># momotang: 8025 (guest) =&gt; 8025 (host) (adapter 1)</span></span><br><span class="line">    <span class="comment"># momotang: 27017 (guest) =&gt; 27017 (host) (adapter 1)</span></span><br><span class="line">    <span class="comment"># momotang: 22 (guest) =&gt; 2222 (host) (adapter 1)</span></span><br></pre></td></tr></table></figure>
+<h2 id="4-快捷配置"><a href="#4-快捷配置" class="headerlink" title="4.快捷配置"></a>4.快捷配置</h2><ul>
+<li><p>after.sh</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install php7.1-mcrypt php7.1-gmp php7.3-gmp  php-redis</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>数据库<br>要从主机的数据库客户端连接到MySQL或PostgreSQL数据库，您应该连接到端口（MySQL）或（PostgreSQL）。两个数据库的用户名和密码是 。</p>
+<ul>
+<li>ip：127.0.0.1 </li>
+<li>mysql端口：33060</li>
+<li>PostgreSQL端口：54320 </li>
+<li>用户名：homestead</li>
+<li>密码：secret</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-vagrant-命令"><a href="#5-vagrant-命令" class="headerlink" title="5.vagrant 命令"></a>5.vagrant 命令</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#启动 - 需切换到配置所在目录</span></span><br><span class="line">vagrant up</span><br><span class="line"></span><br><span class="line"><span class="comment">#ssh到vagrant</span></span><br><span class="line">vagrant ssh</span><br><span class="line"></span><br><span class="line"><span class="comment">#刷新配置文件，切换到homestead目录</span></span><br><span class="line">vagrant reload --provision</span><br><span class="line"></span><br><span class="line"><span class="comment">#增加快捷命令</span></span><br><span class="line"><span class="keyword">function</span> <span class="function"><span class="title">homestead</span></span>() &#123;</span><br><span class="line">    ( <span class="built_in">cd</span> ~/Workspace/Homestead &amp;&amp; vagrant $* )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="6-redis服务"><a href="#6-redis服务" class="headerlink" title="6.redis服务"></a>6.redis服务</h2><ul>
+<li><p>修改Homestead.yaml文件端口转发，并刷新配置文件</p>
+  <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">    ports:</span></span><br><span class="line"><span class="attr">        - send:</span> <span class="number">63790</span></span><br><span class="line"><span class="attr">          to:</span> <span class="number">6379</span></span><br><span class="line">    <span class="string">````</span>    </span><br><span class="line"><span class="bullet">-</span> <span class="string">文件地址：/etc/redis/redis.conf</span></span><br><span class="line">    <span class="string">requirepass</span>   <span class="string">yourpassword----设置任何你想要的密码；</span></span><br><span class="line">    <span class="string">bind</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span> <span class="string">修改为</span> <span class="string">bind</span> <span class="number">0.0</span><span class="number">.0</span><span class="number">.0</span><span class="string">；</span></span><br><span class="line">    <span class="string">```</span> <span class="string">bash</span></span><br><span class="line">    <span class="comment">#redis重启</span></span><br><span class="line">    <span class="string">sudo</span> <span class="string">service</span> <span class="string">redis</span> <span class="string">restart</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>redis连接配置</p>
+  <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">host:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span></span><br><span class="line"><span class="attr">port:</span> <span class="number">63790</span></span><br><span class="line"><span class="attr">auth:</span> <span class="string">yourpassword</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="7-mongoDB服务"><a href="#7-mongoDB服务" class="headerlink" title="7.mongoDB服务"></a>7.mongoDB服务</h2><ul>
+<li><p>要安装MongoDB Community Edition，请使用以下配置选项更新文件：Homestead.yaml。刷新配置文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">mongodb:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>默认</p>
+<ul>
+<li>用户名：homestead</li>
+<li>密码： secret</li>
+</ul>
+</li>
+</ul>
+<h2 id="8-其他"><a href="#8-其他" class="headerlink" title="8.其他"></a>8.其他</h2><h3 id="网址记录"><a href="#网址记录" class="headerlink" title="网址记录"></a>网址记录</h3><ol>
+<li><a href="https://app.vagrantup.com/laravel/boxes/homestead" target="_blank" rel="noopener">laravel/homestead Vagrant box</a></li>
+<li><a href="https://laravel.com/docs/5.7/homestead" target="_blank" rel="noopener">Laravel 官网教程</a></li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/03/15/HTTP的请求过程/" rel="prev" title="HTTP的请求过程">
+                HTTP的请求过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Srako</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Homestead-安装"><span class="nav-number">1.</span> <span class="nav-text">Homestead 安装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-vagrant、virtualbox安装"><span class="nav-number">1.1.</span> <span class="nav-text">1.vagrant、virtualbox安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-安装Homestead-Vagrant-Box"><span class="nav-number">1.2.</span> <span class="nav-text">2.安装Homestead Vagrant Box</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-快捷配置"><span class="nav-number">1.3.</span> <span class="nav-text">4.快捷配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-vagrant-命令"><span class="nav-number">1.4.</span> <span class="nav-text">5.vagrant 命令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-redis服务"><span class="nav-number">1.5.</span> <span class="nav-text">6.redis服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-mongoDB服务"><span class="nav-number">1.6.</span> <span class="nav-text">7.mongoDB服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-其他"><span class="nav-number">1.7.</span> <span class="nav-text">8.其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网址记录"><span class="nav-number">1.7.1.</span> <span class="nav-text">网址记录</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Srako</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

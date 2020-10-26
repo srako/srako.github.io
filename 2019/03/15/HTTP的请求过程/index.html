@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="Zh-cn">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="从浏览器输入网址到网页展示的全过程1、在浏览器输入要的网址 https://wwww.baidu.com  2、浏览器查找域名的IP地址 浏览器缓存 - 浏览器会缓存DNS记录一段时间，不同的浏览器的缓存时间不一样（Chrome的过期时间是1分钟）。 路由缓存 - 接着前面的查询请求发向路由器，它一般会有自己的DNS缓存。 ISP DNS缓存 - 接下来要check的就是ISP缓存DNS的服务器。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP的请求过程">
+<meta property="og:url" content="http://srako.github.io/2019/03/15/HTTP的请求过程/index.html">
+<meta property="og:site_name" content="Srako&#39;s Blog">
+<meta property="og:description" content="从浏览器输入网址到网页展示的全过程1、在浏览器输入要的网址 https://wwww.baidu.com  2、浏览器查找域名的IP地址 浏览器缓存 - 浏览器会缓存DNS记录一段时间，不同的浏览器的缓存时间不一样（Chrome的过期时间是1分钟）。 路由缓存 - 接着前面的查询请求发向路由器，它一般会有自己的DNS缓存。 ISP DNS缓存 - 接下来要check的就是ISP缓存DNS的服务器。">
+<meta property="og:locale" content="Zh-cn">
+<meta property="og:image" content="http://srako.github.io/static/img/tcp_3.jpeg">
+<meta property="og:updated_time" content="2020-10-20T05:42:42.471Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP的请求过程">
+<meta name="twitter:description" content="从浏览器输入网址到网页展示的全过程1、在浏览器输入要的网址 https://wwww.baidu.com  2、浏览器查找域名的IP地址 浏览器缓存 - 浏览器会缓存DNS记录一段时间，不同的浏览器的缓存时间不一样（Chrome的过期时间是1分钟）。 路由缓存 - 接着前面的查询请求发向路由器，它一般会有自己的DNS缓存。 ISP DNS缓存 - 接下来要check的就是ISP缓存DNS的服务器。">
+<meta name="twitter:image" content="http://srako.github.io/static/img/tcp_3.jpeg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://srako.github.io/2019/03/15/HTTP的请求过程/">
+
+
+
+
+
+  <title>HTTP的请求过程 | Srako's Blog</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="Zh-cn">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Srako's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Recording Daily Life</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://srako.github.io/2019/03/15/HTTP的请求过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Srako">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Srako's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP的请求过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-03-15T10:43:44+08:00">
+                2019-03-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Development/" itemprop="url" rel="index">
+                    <span itemprop="name">Development</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="从浏览器输入网址到网页展示的全过程"><a href="#从浏览器输入网址到网页展示的全过程" class="headerlink" title="从浏览器输入网址到网页展示的全过程"></a>从浏览器输入网址到网页展示的全过程</h1><h2 id="1、在浏览器输入要的网址"><a href="#1、在浏览器输入要的网址" class="headerlink" title="1、在浏览器输入要的网址"></a>1、在浏览器输入要的网址</h2><ul>
+<li><a href="https://wwww.baidu.com" target="_blank" rel="noopener">https://wwww.baidu.com</a></li>
+</ul>
+<h2 id="2、浏览器查找域名的IP地址"><a href="#2、浏览器查找域名的IP地址" class="headerlink" title="2、浏览器查找域名的IP地址"></a>2、浏览器查找域名的IP地址</h2><ul>
+<li>浏览器缓存 - 浏览器会缓存DNS记录一段时间，不同的浏览器的缓存时间不一样（Chrome的过期时间是1分钟）。</li>
+<li>路由缓存 - 接着前面的查询请求发向路由器，它一般会有自己的DNS缓存。</li>
+<li>ISP DNS缓存 - 接下来要check的就是ISP缓存DNS的服务器。在这一般都能找到相应的换粗记录。</li>
+<li>递归搜索 - 你的ISP的DNS服务器从跟域名服务器开始进行递归搜索， 从.com顶级域名服务器到百度的域名服务器。一般DNS服务器的缓存中会有.com域名服务器中的域名，所以顶级服务器的匹配过程不是那么必要了。</li>
+</ul>
+<h2 id="3、浏览器与服务器建立链接"><a href="#3、浏览器与服务器建立链接" class="headerlink" title="3、浏览器与服务器建立链接"></a>3、浏览器与服务器建立链接</h2><ul>
+<li><p>在请求之前，需要浏览器与服务器建立连接（TCP或者UDP）</p>
+<ul>
+<li>与服务器建立连接时TCP属于安全的连接，需要三次握手。<br><img src="/static/img/tcp_3.jpeg" alt="img"></li>
+<li><p>SYN：代表请求创建连接，所以在三次握手中前两次要SYN=1，表示这两次用于建立连接。</p>
+</li>
+<li><p>FIN：表示请求关闭连接，在四次分手时，我们发现FIN发了两遍。这是因为TCP的连接是双向的，所以一次FIN只能关闭一个方向。</p>
+</li>
+<li><p>ACK：代表确认接受，从上面可以发现，不管是三次握手还是四次分手，在回应的时候都会加上ACK=1，表示消息接收到了，并且在建立连接以后的发送数据时，都需加上ACK=1,来表示数据接收成功。</p>
+</li>
+<li><p>seq:序列号，什么意思呢？当发送一个数据时，数据是被拆成多个数据包来发送，序列号就是对每个数据包进行编号，这样接受方才能对数据包进行再次拼接。</p>
+</li>
+</ul>
+</li>
+<li>与服务器响应软件建立管道连接（socket） </li>
+</ul>
+<h2 id="4、浏览器给WEB服务器发送HTTP请求"><a href="#4、浏览器给WEB服务器发送HTTP请求" class="headerlink" title="4、浏览器给WEB服务器发送HTTP请求"></a>4、浏览器给WEB服务器发送HTTP请求</h2><ul>
+<li><p>百度主页为动态页面，打开后在浏览器缓存中很快甚至马上就会国旗，毫无疑问他们不能从之读取。所以，浏览器将把以下请求发送给百度所在的服务器：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8</span><br><span class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate, br</span><br><span class="line"><span class="attribute">Accept-Language</span>: zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line"><span class="attribute">Cache-Control</span>: no-cache</span><br><span class="line"><span class="attribute">Connection</span>: keep-alive</span><br><span class="line"><span class="attribute">Cookie</span>: BAIDUID=DB950B3D3996ECE570E2C2B148A24BF7:FG=1; BIDUPSID=DB950B3D3996ECE570E2C2B148A24BF7; PSTM=1552621892; delPer=0; BD_HOME=0; H_PS_PSSID=1426_21094_28558_28608_28585_28604_22159; BD_UPN=123253</span><br><span class="line"><span class="attribute">Host</span>: www.baidu.com</span><br><span class="line"><span class="attribute">Pragma</span>: no-cache</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span>: 1</span><br><span class="line"><span class="attribute">User-Agent</span>: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>解析请求含义</p>
+<ul>
+<li>Accept 客户端希望接受的数据类型</li>
+<li>Accept-Encoding 支持gzip, deflate, br类型</li>
+<li>Accept-Language 允许客户端声明它可以理解的自然语言</li>
+<li><p>Cache-Control - HTTP 1.1（Pragma - HTTP 1.0）：</p>
+<ul>
+<li>no-cache  — 不要读取缓存中的文件，要求向WEB服务器重新请求</li>
+<li>no-store    — 请求和响应都禁止被缓存</li>
+<li>max-age： — 表示当访问此网页后的max-age秒内再次访问不会去服务器请求，其功能与Expires类似，只是Expires是根据某个特定日期值做比较。一但缓存者自身的时间不准确.则结果可能就是错误的，而max-age,显然无此问题.。Max-age的优先级也是高于Expires的。</li>
+<li>max-stale  — 允许读取过期时间必须小于max-stale 值的缓存对象。 </li>
+<li><p>min-fresh — 接受其max-age生命期大于其当前时间 跟 min-fresh 值之和的缓存对象</p>
+</li>
+<li><p>only-if-cached — 告知缓存者,我希望内容来自缓存，我并不关心被缓存响应,是否是新鲜的.</p>
+</li>
+<li><p>no-transform   — 告知代理,不要更改媒体类型,比如jpg,被你改成png.</p>
+</li>
+</ul>
+</li>
+<li>Connection头要求服务器为了后边的请求不要关闭TCP连接。</li>
+<li>Cookie 存储登陆用户名</li>
+<li>User-Agent 浏览器标示</li>
+</ul>
+</li>
+</ul>
+<h2 id="5、服务器处理请求-nginx-php-fpm"><a href="#5、服务器处理请求-nginx-php-fpm" class="headerlink" title="5、服务器处理请求(nginx+php-fpm)"></a>5、服务器处理请求(nginx+php-fpm)</h2><div id="flowchart-0" class="flow-chart"></div>
+
+<h2 id="6、服务器返回一个HTML响应"><a href="#6、服务器返回一个HTML响应" class="headerlink" title="6、服务器返回一个HTML响应"></a>6、服务器返回一个HTML响应</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Cache-Control</span>: private</span><br><span class="line"><span class="attribute">Connection</span>: Keep-Alive</span><br><span class="line"><span class="attribute">Content-Encoding</span>: gzip</span><br><span class="line"><span class="attribute">Content-Type</span>: text/html</span><br><span class="line"><span class="attribute">Cxy_all</span>: baidu+8ecc9869f7b15cf9e50e07e5d89e4a14</span><br><span class="line"><span class="attribute">Date</span>: Fri, 15 Mar 2019 06:33:47 GMT</span><br><span class="line"><span class="attribute">Expires</span>: Fri, 15 Mar 2019 06:32:51 GMT</span><br><span class="line"><span class="attribute">Server</span>: BWS/1.1</span><br><span class="line"><span class="attribute">Set-Cookie</span>: delPer=0; path=/; domain=.baidu.com</span><br><span class="line"><span class="attribute">Set-Cookie</span>: BDSVRTM=0; path=/</span><br><span class="line"><span class="attribute">Set-Cookie</span>: BD_HOME=0; path=/</span><br><span class="line"><span class="attribute">Set-Cookie</span>: H_PS_PSSID=1457_21117_28558_28608_28584_28639_26350_28604_27542; path=/; domain=.baidu.com</span><br><span class="line"><span class="attribute">Strict-Transport-Security</span>: max-age=172800</span><br><span class="line"><span class="attribute">Transfer-Encoding</span>: chunked</span><br><span class="line"><span class="attribute">Vary</span>: Accept-Encoding</span><br><span class="line"><span class="attribute">X-Ua-Compatible</span>: IE=Edge,chrome=1</span><br></pre></td></tr></table></figure>
+<h2 id="7、浏览器开始显示HTML"><a href="#7、浏览器开始显示HTML" class="headerlink" title="7、浏览器开始显示HTML"></a>7、浏览器开始显示HTML</h2><ul>
+<li>在浏览器没有完整接受全部HTML文档时，它就已经开始显示这个页面了</li>
+</ul>
+<h2 id="8、加载网站文件"><a href="#8、加载网站文件" class="headerlink" title="8、加载网站文件"></a>8、加载网站文件</h2><ul>
+<li>解析HTML文档、构建DOM树、下载资源、构造CSSOM树、执行JS脚本（没有严格的先后执行顺序）<ul>
+<li>构建DOM树：<ul>
+<li>Tokenizing：根据HTML规范将字符流解析为标记</li>
+<li>Lexing：词法分析将标记转换为对象并定义属性和规则</li>
+<li>DOM construction：根据HTML标记关系将对象组成DOM树</li>
+</ul>
+</li>
+<li>解析过程中遇到图片、样式表、JS文件，启动下载</li>
+<li>构建CSSOM树：<ul>
+<li>Tokenizing：字符流转换为标记流</li>
+<li>Node：根据标记创建节点</li>
+<li>CSSOM：节点创建CSSOM树</li>
+</ul>
+</li>
+<li>根据DOM树和CSSOM树构建渲染树：<ul>
+<li>从DOM树的根节点遍历所有可见节点，不可见节点包括：1）script,meta这样本身不可见的标签。2)被css隐藏的节点，如display: none</li>
+<li>对每一个可见节点，找到恰当的CSSOM规则并应用</li>
+<li>发布可视节点的内容和计算样式</li>
+</ul>
+</li>
+<li>JS解析：<ul>
+<li>浏览器创建Document对象并解析HTML，将解析到的元素和文本节点添加到文档中，此时document.readystate为loading</li>
+<li>HTML解析器遇到没有async和defer的script时，将他们添加到文档中，然后执行行内或外部脚本。这些脚本会同步执行，并且在脚本下载和执行时解析器会暂停。这样就可以用document.write()把文本插入到输入流中。同步脚本经常简单定义函数和注册事件处理程序，他们可以遍历和操作script和他们之前的文档内容</li>
+<li>当解析器遇到设置了async属性的script时，开始下载脚本并继续解析文档。脚本会在它下载完成后尽快执行，但是解析器不会停下来等它下载。异步脚本禁止使用document.write()，它们可以访问自己script和之前的文档元素</li>
+<li>当文档完成解析，document.readState变成interactive</li>
+<li>所有defer脚本会按照在文档出现的顺序执行，延迟脚本能访问完整文档树，禁止使用document.write()</li>
+<li>浏览器在Document对象上触发DOMContentLoaded事件</li>
+<li>此时文档完全解析完成，浏览器可能还在等待如图片等内容加载，等这些内容完成载入并且所有异步脚本完成载入和执行，document.readState变为complete,window触发load事件</li>
+</ul>
+</li>
+<li>显示页面（HTML解析过程中会逐步显示页面）<script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script><textarea id="flowchart-0-code" style="display: none">st=>start: https://www.baidu.com
+op1=>operation: Nginx
+op2=>operation: 路由到www.baidu.com/index.php
+op3=>operation: 加载nginx的fast-cgi模块
+op4=>operation: fast-cgi监听127.0.0.1:9000地址
+op5=>operation: www.example.com/index.php请求到达127.0.0.1:9000
+op6=>inputoutput: php-fpm 监听127.0.0.1:9000
+op7=>inputoutput: php-fpm 接收到请求，启用worker进程处理请求
+op8=>inputoutput: php-fpm 处理完请求，返回给nginx
+cond=>condition: php-fpm是否监听到?
+e=>end: nginx将结果通过http返回给浏览器
+st->op1->op2->op3->op4->op5->cond
+cond(no)->e
+cond(yes)->op6->op7->op8->e</textarea><textarea id="flowchart-0-options" style="display: none">{"scale":1,"line-width":2,"line-length":50,"text-margin":10,"font-size":12}</textarea><script>  var code = document.getElementById("flowchart-0-code").value;  var options = JSON.parse(decodeURIComponent(document.getElementById("flowchart-0-options").value));  var diagram = flowchart.parse(code);  diagram.drawSVG("flowchart-0", options);</script></li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/03/12/homestead/" rel="next" title="Homestead">
+                <i class="fa fa-chevron-left"></i> Homestead
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/04/02/VPN/" rel="prev" title="VPN">
+                VPN <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Srako</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#从浏览器输入网址到网页展示的全过程"><span class="nav-number">1.</span> <span class="nav-text">从浏览器输入网址到网页展示的全过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1、在浏览器输入要的网址"><span class="nav-number">1.1.</span> <span class="nav-text">1、在浏览器输入要的网址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2、浏览器查找域名的IP地址"><span class="nav-number">1.2.</span> <span class="nav-text">2、浏览器查找域名的IP地址</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3、浏览器与服务器建立链接"><span class="nav-number">1.3.</span> <span class="nav-text">3、浏览器与服务器建立链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4、浏览器给WEB服务器发送HTTP请求"><span class="nav-number">1.4.</span> <span class="nav-text">4、浏览器给WEB服务器发送HTTP请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5、服务器处理请求-nginx-php-fpm"><span class="nav-number">1.5.</span> <span class="nav-text">5、服务器处理请求(nginx+php-fpm)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6、服务器返回一个HTML响应"><span class="nav-number">1.6.</span> <span class="nav-text">6、服务器返回一个HTML响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7、浏览器开始显示HTML"><span class="nav-number">1.7.</span> <span class="nav-text">7、浏览器开始显示HTML</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8、加载网站文件"><span class="nav-number">1.8.</span> <span class="nav-text">8、加载网站文件</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Srako</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
